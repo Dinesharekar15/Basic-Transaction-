@@ -1,87 +1,178 @@
 const User=require('../Models/usermodel')
 const jwt=require("jsonwebtoken");
+const zod =require("zod");
+const JWT_SECRET = require('../config');
 
-const generateToken = (id) => {
-    return jwt.sign({ id }, 'pytm123', { expiresIn: '30d' });
-  };
+const signupBody=zod.object({
+  username:zod.string(),
+  firstName:zod.string(),
+  lastName:zod.string(),
+  password:zod.string()
+})
+
+const signInBody=zod.object({
+  username:zod.string(),
+  password:zod.string()
+})
+
+const updateuser=zod.object({
+  username:zod.string().optional(),
+  firstName:zod.string().optional(),
+  lastName:zod.string().optional(),
+  password:zod.string().optional(),
+})
+
 
 //signup 
 
   const signUpUser = async (req, res) => {
 
-    const { username, firstName, lastName, password } = req.body;
-  
-    try {
-      const userExists = await User.findOne({ username });
-  
-      if (userExists) {
-        return res.status(400).json({ message: 'User already exists' });
-      }
-  
-      const user = await User.create({ username, firstName, lastName, password });
-      res.status(201).json({
-        _id: user._id,
-        username: user.username,
-        token: generateToken(user._id),
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Error creating user', error });
+    const {success}=signupBody.safeParse(req.body)
+    if(!success){
+      return res.status(411).json({
+        message:"Email alresdy taken / Incorrect inpute"
+      })
     }
+    
+    const existingUSer=await User.findOne({
+      username:req.body.username
+    })
+
+    if(existingUSer){
+      return res.status(411).json({
+        message:"Email alresdy taken / Incorrect inpute"
+      })
+    }
+
+    const user=await User.create({
+      username:req.body.username,
+      firstName:req.body.firstName,
+      lastName:req.body.lastName,
+      password:req.body.password
+    })
+    const userId=user._id;
+    const token=jwt.sign({
+      userId
+    },JWT_SECRET)
+
+    res.json({
+      meassage:"User created succefully",
+      token:token
+    })
   };
 
 
   //user signin 
   const signInUser = async (req, res) => {
-    console.log('Hit the signup route');
+    
+    const {success}=signInBody.safeParse(req.body);
 
-    const { username, password } = req.body;
+    if(!success){
+      return res.json({
+        message:"Incorrect input"
+      })
+    }
+    try{
+
+    
+    const existingUSer=await User.findOne({
+      username:req.body.username,
+      password:req.body.password
+    })
+
+    if(!existingUSer){
+      return res.status(404).json({
+        message:"user not found"
+      })
+    }
+    const userId=existingUSer._id;
+    const token =jwt.sign({
+      userId
+    },JWT_SECRET)
+
+    res.json({
+      message: "Signed in successfully",
+      token: token
+    });
+
+
+    
   
-    try {
-      const user = await User.findOne({ username });
-  
-      if (user && (await user.matchPassword(password))) {
-        res.json({
-          _id: user._id,
-          username: user.username,
-          token: generateToken(user._id),
-        });
-      } else {
-        res.status(401).json({ message: 'Invalid username or password' });
-      }
-    } catch (error) {
+  }catch (error) {
       res.status(500).json({ message: 'Error signing in', error });
     }
   };  
 
   // Update user information
 const updateUser = async (req, res) => {
-    const { firstName, lastName, password } = req.body;
-    const userId = req.user.id;
   
-    try {
-      const user = await User.findById(userId);
+  const {success}=updateuser.safeParse(req.body);
+
+  if(!success){
+    return res.status(411).json({
+      message:"error while updaring Imformation"
+    })
+  }
+  await User.updateOne(req.body,{
+    id:req.userId
+  })
+  res.json({
+    message:"user updated successfully"
+  })
+
+    // const { firstName, lastName, password } = req.body;
+    // const userId = req.user.id;
   
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+    // try {
+    //   const user = await User.findById(userId);
   
-      user.firstName = firstName || user.firstName;
-      user.lastName = lastName || user.lastName;
-      if (password) {
-        user.password = password;
-      }
+    //   if (!user) {
+    //     return res.status(404).json({ message: 'User not found' });
+    //   }
   
-      await user.save();
-      res.json({
-        _id: user._id,
-        username: user.username,
-        firstname: user.firstName,
-        lastname: user.lastName,
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Error updating user', error });
-    }
+    //   user.firstName = firstName || user.firstName;
+    //   user.lastName = lastName || user.lastName;
+    //   if (password) {
+    //     user.password = password;
+    //   }
+  
+    //   await user.save();
+    //   res.json({
+    //     _id: user._id,
+    //     username: user.username,
+    //     firstname: user.firstName,
+    //     lastname: user.lastName,
+    //   });
+    // } catch (error) {
+    //   res.status(500).json({ message: 'Error updating user', error });
+    // }
   };
+
+  const findUser=async (req,res)=>{
+    const filter= req.query.filter||"";
+    const users= await User.find({
+      $or:[{
+        firstName:{
+          "$regex":filter
+        }
+      },{
+        lastName:{
+          "$regex":filter
+        }
+      }]
+    })
+
+    res.json({
+      user:users.map(user=>({
+        username:user.username,
+        firstName:user.firstName,
+        lastName:user.lastName,
+        _id:user._id
+      })) 
+    })
+      
+  }
   
-  module.exports = { signUpUser, signInUser, updateUser };
+  
+  module.exports = { signUpUser, signInUser, updateUser,findUser };
   
