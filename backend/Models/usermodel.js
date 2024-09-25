@@ -1,9 +1,6 @@
 
-const mongoose=require("mongoose");
+const mongoose =require ("mongoose")
 
-const Dbconnect = async function name(params) {
-    await mongoose.connect("mongodb://localhost:27017/PayTm")
-}
 const userSchema = new mongoose.Schema({
     username: { 
       type: String, 
@@ -31,4 +28,3 @@ const userSchema = new mongoose.Schema({
   
   const User = mongoose.model('User', userSchema);
   module.exports = User;
-
