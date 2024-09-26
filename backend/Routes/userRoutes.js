@@ -9,8 +9,8 @@ router.post('/signup',signUpUser)
 
 router.post('/signin',signInUser)
 
-router.post('/update',authmiddleware,updateUser)
+router.put('/update',authmiddleware,updateUser)
 
-router.get('/find',findUser)
+router.get('/finduser',findUser)
 
 module.exports = router;

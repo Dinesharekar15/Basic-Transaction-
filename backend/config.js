@@ -1,2 +1,2 @@
-const JWT_SECRET="paytm";
-module.exports =JWT_SECRET
+const JWT_SECRET = "paytm"; // Define your secret here
+module.exports = JWT_SECRET; 

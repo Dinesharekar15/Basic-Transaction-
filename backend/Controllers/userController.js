@@ -1,8 +1,8 @@
 const User=require('../Models/usermodel')
+const Account=require('../Models/Accounts')
 const jwt=require("jsonwebtoken");
 const zod =require("zod");
-const JWT_SECRET = require('../config');
-
+const JWT_SECRET = require("../config.js");
 const signupBody=zod.object({
   username:zod.string(),
   firstName:zod.string(),
@@ -15,12 +15,7 @@ const signInBody=zod.object({
   password:zod.string()
 })
 
-const updateuser=zod.object({
-  username:zod.string().optional(),
-  firstName:zod.string().optional(),
-  lastName:zod.string().optional(),
-  password:zod.string().optional(),
-})
+
 
 
 //signup 
@@ -30,7 +25,7 @@ const updateuser=zod.object({
     const {success}=signupBody.safeParse(req.body)
     if(!success){
       return res.status(411).json({
-        message:"Email alresdy taken / Incorrect inpute"
+        message:" Incorrect inpute"
       })
     }
     
@@ -40,7 +35,7 @@ const updateuser=zod.object({
 
     if(existingUSer){
       return res.status(411).json({
-        message:"Email alresdy taken / Incorrect inpute"
+        message:"Email already  taken"
       })
     }
 
@@ -51,6 +46,17 @@ const updateuser=zod.object({
       password:req.body.password
     })
     const userId=user._id;
+
+    try {
+      await Account.create({
+        userId,
+        balance: 1 + Math.random() * 10000
+      });
+    } catch (err) {
+      console.error('Error creating account:', err);
+      return res.status(500).json({ message: 'Error creating account' });
+    }
+    
     const token=jwt.sign({
       userId
     },JWT_SECRET)
@@ -88,7 +94,7 @@ const updateuser=zod.object({
     const userId=existingUSer._id;
     const token =jwt.sign({
       userId
-    },JWT_SECRET)
+    },JWT_SECRET,{ expiresIn: '1h' })
 
     res.json({
       message: "Signed in successfully",
@@ -103,64 +109,58 @@ const updateuser=zod.object({
     }
   };  
 
+  const updateuser=zod.object({
+    
+    firstName:zod.string().optional(),
+    lastName:zod.string().optional(),
+    password:zod.string().optional(),
+  })
+
   // Update user information
-const updateUser = async (req, res) => {
+  const updateUser = async (req, res) => {
+    try {
+      // Validate the input using zod
+      const { success } = updateuser.safeParse(req.body);
   
-  const {success}=updateuser.safeParse(req.body);
-
-  if(!success){
-    return res.status(411).json({
-      message:"error while updaring Imformation"
-    })
-  }
-  await User.updateOne(req.body,{
-    id:req.userId
-  })
-  res.json({
-    message:"user updated successfully"
-  })
-
-    // const { firstName, lastName, password } = req.body;
-    // const userId = req.user.id;
+      if (!success) {
+        return res.status(400).json({
+          message: "Error while updating information",
+        });
+      }
   
-    // try {
-    //   const user = await User.findById(userId);
+      // Update user data
+      const result = await User.updateOne(
+        { _id: req.userId }, // Query to find the user by ID
+        { $set: req.body } // Set the fields from the request body to update
+      );
   
-    //   if (!user) {
-    //     return res.status(404).json({ message: 'User not found' });
-    //   }
+      if (result.nModified === 0) {
+        return res.status(404).json({
+          message: "User not found or no changes made",
+        });
+      }
   
-    //   user.firstName = firstName || user.firstName;
-    //   user.lastName = lastName || user.lastName;
-    //   if (password) {
-    //     user.password = password;
-    //   }
-  
-    //   await user.save();
-    //   res.json({
-    //     _id: user._id,
-    //     username: user.username,
-    //     firstname: user.firstName,
-    //     lastname: user.lastName,
-    //   });
-    // } catch (error) {
-    //   res.status(500).json({ message: 'Error updating user', error });
-    // }
+      res.json({
+        message: "User updated successfully",
+      });
+    } catch (error) {
+      console.error("Update failed:", error);
+      res.status(500).json({
+        message: "Server error while updating user",
+        error: error.message,
+      });
+    }
   };
+  
 
   const findUser=async (req,res)=>{
     const filter= req.query.filter||"";
-    const users= await User.find({
-      $or:[{
-        firstName:{
-          "$regex":filter
-        }
-      },{
-        lastName:{
-          "$regex":filter
-        }
-      }]
-    })
+    const users = await User.find({
+      $or: [
+        { firstName: { "$regex": filter, "$options": "i" } },
+        { lastName: { "$regex": filter, "$options": "i" } }
+      ]
+    });
 
     res.json({
       user:users.map(user=>({
