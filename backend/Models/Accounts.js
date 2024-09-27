@@ -7,6 +7,11 @@ const accountschema=new mongoose.Schema({
         ref: 'User' ,
         required: true
     },
+    accountName:{
+        type: String, 
+        required:true, 
+        
+    },
     balance:{
         type:Number,
         require:true

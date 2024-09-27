@@ -22,7 +22,7 @@ const balance=async(req,res)=>{
 
 const transfer = async (req, res) => {
     try {
-        console.log(req.userId);
+        
         const { amount, to } = req.body;
 
         // Validate recipient's userId (to)

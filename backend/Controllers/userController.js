@@ -50,6 +50,7 @@ const signInBody=zod.object({
     try {
       await Account.create({
         userId,
+        accountName:user.username,
         balance: 1 + Math.random() * 10000
       });
     } catch (err) {
@@ -155,11 +156,13 @@ const signInBody=zod.object({
 
   const findUser=async (req,res)=>{
     const filter= req.query.filter||"";
+    const loggedInUserId=req.userId;
     const users = await User.find({
       $or: [
         { firstName: { "$regex": filter, "$options": "i" } },
         { lastName: { "$regex": filter, "$options": "i" } }
-      ]
+      ],
+      _id: { $ne: loggedInUserId }
     });
 
     res.json({
