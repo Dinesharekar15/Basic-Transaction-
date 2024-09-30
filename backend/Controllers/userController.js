@@ -1,8 +1,9 @@
+require('dotenv').config();
 const User=require('../Models/usermodel')
 const Account=require('../Models/Accounts')
 const jwt=require("jsonwebtoken");
 const zod =require("zod");
-const JWT_SECRET = require("../config.js");
+
 const signupBody=zod.object({
   username:zod.string(),
   firstName:zod.string(),
@@ -60,7 +61,7 @@ const signInBody=zod.object({
     
     const token=jwt.sign({
       userId
-    },JWT_SECRET)
+    },process.env.JWT_SECRET)
 
     res.json({
       meassage:"User created succefully",
@@ -95,7 +96,7 @@ const signInBody=zod.object({
     const userId=existingUSer._id;
     const token =jwt.sign({
       userId
-    },JWT_SECRET,{ expiresIn: '1h' })
+    },process.env.JWT_SECRET)
 
     res.json({
       message: "Signed in successfully",

@@ -2,7 +2,7 @@ const Account=require('../Models/Accounts');
 const User=require('../Models/usermodel')
 const jwt=require("jsonwebtoken");
 const zod =require("zod");
-const JWT_SECRET = require('../config');
+
 const { default: mongoose } = require('mongoose');
 
 const balance=async(req,res)=>{
