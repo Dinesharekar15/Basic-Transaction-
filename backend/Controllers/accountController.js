@@ -54,7 +54,7 @@ const transfer = async (req, res) => {
         );
 
         // Send success response
-        res.json({ message: "Transfer successful" });
+        res.status(200).json({ message: "Transfer successful" });
     } catch (error) {
         console.error("Transfer failed:", error);
         res.status(500).json({ message: "Transfer failed", error });

@@ -62,7 +62,7 @@ export const Appbar = () => {
             <h2 className="font-semibold text-lg mb-2">User Information</h2>
             <p><strong>Name:</strong> {userInfo.name}</p>
             <p><strong>Email:</strong> {userInfo.email}</p>
-            <p><strong>Account Balance:</strong> ${userInfo.balance}</p>
+            <p><strong>Account Balance:</strong> Rs:{userInfo.balance}</p>
             <button
               onClick={handleLogout}
               className="mt-4 w-full bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"

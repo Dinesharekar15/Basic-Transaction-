@@ -187,22 +187,28 @@ const signInBody=zod.object({
   const findUser=async (req,res)=>{
     const filter= req.query.filter||"";
     const loggedInUserId=req.userId;
-    const users = await User.find({
-      $or: [
-        { firstName: { "$regex": filter, "$options": "i" } },
-        { lastName: { "$regex": filter, "$options": "i" } }
-      ],
-      _id: { $ne: loggedInUserId }
-    });
+    try {
+      const users = await User.find({
+        $or: [
+          { firstName: { "$regex": filter, "$options": "i" } },
+          { lastName: { "$regex": filter, "$options": "i" } }
+        ],
+        _id: { $ne: loggedInUserId }
+      });
+  
+      res.json({
+        user:users.map(user=>({
+          username:user.username,
+          firstName:user.firstName,
+          lastName:user.lastName,
+          _id:user._id
+        })) 
+      })
+    } catch (error) {
+      res.status(500).json({ message: "An error occurred while searching for users", error });
 
-    res.json({
-      user:users.map(user=>({
-        username:user.username,
-        firstName:user.firstName,
-        lastName:user.lastName,
-        _id:user._id
-      })) 
-    })
+    }
+    
       
   }
   

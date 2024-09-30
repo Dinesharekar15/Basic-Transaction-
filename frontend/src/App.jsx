@@ -8,6 +8,7 @@ import { SignUp } from "./Pages/SignUp";
 import { Signin } from "./Pages/SignIn";
 import { SendMoney } from "./Pages/SendMoney";
 import { ProtectedRoute } from "./Pages/ProtectedRoute";
+import { PublicRoute } from "./Pages/Islogin";
 
 function App() {
 
@@ -15,8 +16,9 @@ function App() {
     <div>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<SignUp/>}/>
-            <Route path="/signin" element={<Signin/>}/>
+            <Route path="/" element={<PublicRoute><SignUp/></PublicRoute>}/>
+            <Route path="/signup" element={<PublicRoute><SignUp/></PublicRoute>}/>
+            <Route path="/signin" element={<PublicRoute><Signin/></PublicRoute>}/>
             <Route
              path="/dashboard" 
              element={

@@ -6,6 +6,6 @@ const router=express.Router();
 
 
 router.get("/balance",authmiddleware,balance)
-router.post("/tranfer",authmiddleware,transfer)
+router.post("/transfer",authmiddleware,transfer)
 
 module.exports=router
