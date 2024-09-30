@@ -7,7 +7,7 @@ const cors=require("cors")
 
 const app=express();
 connectDb();
-app.use(cors())
+app.use(cors());
 app.use(express.json()); 
 // 
 

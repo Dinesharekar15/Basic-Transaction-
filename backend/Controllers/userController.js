@@ -111,7 +111,6 @@ const signInBody=zod.object({
   };  
 
   const updateuser=zod.object({
-    
     firstName:zod.string().optional(),
     lastName:zod.string().optional(),
     password:zod.string().optional(),
