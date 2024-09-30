@@ -9,7 +9,8 @@ import { useNavigate } from "react-router-dom"
 
 export const Signin = () => {
     const [username,setUsername]=useState("");
-    const [password,setPassword]=useState("")
+    const [password,setPassword]=useState("");
+    const [err,setErr]=useState("")
     const navigate=useNavigate()
 
     return <div className="bg-slate-300 h-screen flex justify-center">
@@ -23,8 +24,12 @@ export const Signin = () => {
         <InputBox onChange={e=>{
             setPassword(e.target.value)
         }} placeholder="123456" label={"Password"} />
+        {err&&<p className="text-red-500 mt-2">{err}</p>}
         <div className="pt-4">
           <Button onClick={async()=>{
+                            try{
+
+                            
                             const responce =await axios.post("http://localhost:3000/api/users/signin",{
                                 username,
                                 password
@@ -32,9 +37,17 @@ export const Signin = () => {
                             console.log(responce)
                             localStorage.setItem("token", responce.data.token)
                             navigate("/dashboard")
+                          }catch(err){
+                            console.log(err)
+                            if (err.response && err.response.status === 404) {
+                              setErr("User Not Found"); // Set error message if username exists
+                          } else {
+                              setErr("Something went wrong. Please try again.");
+                          }
+                          }
                         }} label={"Sign in"} />
         </div>
-        <BottomWarning label={"Don't have an account?"} buttonText={"Sign up"} to={"/signup"} />
+        <BottomWarning label={"Don't have an account?"} buttonText={"Sign up"} to={"/"} />
       </div>
     </div>
   </div>

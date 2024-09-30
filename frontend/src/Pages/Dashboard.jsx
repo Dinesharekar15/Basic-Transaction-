@@ -11,6 +11,7 @@ export const Dashboard=()=>{
     const [balance,setBalance]=useState(null);
     const getBalance =async function (){
         const token =localStorage.getItem("token");
+        
         const res=await axios.get("http://localhost:3000/api/account/balance",{
             headers:{
                 Authorization:`Bearer ${token}`
@@ -24,7 +25,7 @@ export const Dashboard=()=>{
     return(
         <>
             <Appbar/>
-            <div className="m-8">
+            <div className="m-8 ">
                 <Balance value={balance !== null ? balance : "Loading..."} />
                 <Users/>
             </div>

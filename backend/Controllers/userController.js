@@ -151,6 +151,37 @@ const signInBody=zod.object({
       });
     }
   };
+
+  const getInfo = async (req, res) => {
+    try {
+      // Assuming the userId is stored in req.userId after JWT verification
+      const userId = req.userId;
+      console.log(userId);
+  
+      // Fetch the user from the User model
+      const user = await User.findOne({ _id: userId }); // Adjust this to the correct field name
+      console.log("User Found:", user);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" }); // Not found
+      }
+  
+      // Fetch the account from the Account model
+      const account = await Account.findOne({ userId: userId }); // Adjust this to the correct field name
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" }); // Corrected typo in "message"
+      }
+  
+      // Send the user and account info back to the client
+      res.json({
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.username,
+        balance: account.balance,
+      });
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
   
 
   const findUser=async (req,res)=>{
@@ -176,5 +207,5 @@ const signInBody=zod.object({
   }
   
   
-  module.exports = { signUpUser, signInUser, updateUser,findUser };
+  module.exports = { signUpUser, signInUser, updateUser,findUser,getInfo };
   
