@@ -7,7 +7,14 @@ const cors=require("cors")
 
 const app=express();
 connectDb();
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://paytm-frontend-liard-chi.vercel.app", // Your deployed frontend URL
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
+
 app.use(express.json()); 
 // 
 
