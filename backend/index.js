@@ -17,6 +17,10 @@ app.use(
 
 app.use(express.json()); 
 // 
+app.get('/', (req, res) => {
+  res.send('Hello');
+});
+
 
 app.use('/api/users',userRoutes)
 
