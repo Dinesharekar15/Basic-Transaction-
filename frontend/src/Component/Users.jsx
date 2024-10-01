@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect,useState } from "react";
 import { Button } from "./Button";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "../url";
 
 
 export const Users=()=>{
@@ -9,7 +10,7 @@ export const Users=()=>{
     const [filter,setFilter]=useState([])
 
     useEffect(()=>{
-        axios.get(`http://localhost:3000/api/users/finduser?filter=${filter}`)
+        axios.get(`${baseUrl}/api/users/finduser?filter=${filter}`)
         .then(res=>{
             setUsers(res.data.user)
         })

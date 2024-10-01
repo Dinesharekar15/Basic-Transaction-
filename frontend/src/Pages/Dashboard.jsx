@@ -5,6 +5,7 @@ import { Appbar } from "../Component/Appbar"
 import { Balance } from "../Component/Balance"
 import { Users } from "../Component/Users"
 import axios from "axios"
+import { baseUrl } from "../url"
 
 
 export const Dashboard=()=>{
@@ -12,7 +13,7 @@ export const Dashboard=()=>{
     const getBalance =async function (){
         const token =localStorage.getItem("token");
         
-        const res=await axios.get("http://localhost:3000/api/account/balance",{
+        const res=await axios.get(`${baseUrl}/api/account/balance`,{
             headers:{
                 Authorization:`Bearer ${token}`
             }

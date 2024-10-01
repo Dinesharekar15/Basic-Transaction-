@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { baseUrl } from "../url";
 
 export const Appbar = () => {
   const navigate=useNavigate();
@@ -20,7 +21,7 @@ export const Appbar = () => {
   const fetchUserInfo= async()=>{
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.get("http://localhost:3000/api/users/info", {
+      const res = await axios.get(`${baseUrl}/api/users/info`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

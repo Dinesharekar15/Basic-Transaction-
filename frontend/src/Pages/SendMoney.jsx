@@ -2,6 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
 import yesicon from "../assets/yes.png"
+import { baseUrl } from "../url";
 
 export const SendMoney = () => {
   const [searchParams] = useSearchParams();
@@ -14,7 +15,7 @@ export const SendMoney = () => {
   const handleTransfer= async() => {
     try{
       const response = await axios.post(
-        "http://localhost:3000/api/account/transfer",
+        `${baseUrl}/api/account/transfer`,
         {
           to: id,
           amount,

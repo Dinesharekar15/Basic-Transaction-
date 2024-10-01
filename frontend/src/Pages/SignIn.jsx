@@ -6,6 +6,7 @@ import { Button } from "../Component/Button"
 import { BottomWarning } from "../Component/BottomWarning"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { baseUrl } from "../url"
 
 export const Signin = () => {
     const [username,setUsername]=useState("");
@@ -30,7 +31,7 @@ export const Signin = () => {
                             try{
 
                             
-                            const responce =await axios.post("http://localhost:3000/api/users/signin",{
+                            const responce =await axios.post(`${baseUrl}/api/users/signin`,{
                                 username,
                                 password
                             })
