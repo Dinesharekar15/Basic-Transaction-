@@ -35,7 +35,7 @@ export const Signin = () => {
                                 username,
                                 password
                             })
-                            console.log(responce)
+                            
                             localStorage.setItem("token", responce.data.token)
                             navigate("/dashboard")
                           }catch(err){
